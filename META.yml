@@ -1,0 +1,22 @@
+---
+abstract: 'Transport-independent implementation of json-rpc 2.0'
+author:
+  - 'Alex Efros <powerman-asdf@ya.ru>'
+build_requires:
+  Test::More: 0
+distribution_type: module
+generated_by: 'Module::Install version 0.77'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: JSON-RPC2
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  JSON::XS: 0
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.001000
