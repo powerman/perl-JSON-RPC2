@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.1.0');    # update POD & Changes & README
+use version; our $VERSION = qv('0.1.1');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -120,7 +120,7 @@ JSON::RPC2::Client - Transport-independent json-rpc 2.0 client
 
 =head1 VERSION
 
-This document describes JSON::RPC2::Client version 0.1.0
+This document describes JSON::RPC2::Client version 0.1.1
 
 
 =head1 SYNOPSIS

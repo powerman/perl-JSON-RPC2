@@ -1,4 +1,4 @@
-JSON-RPC2 version 0.1.0
+JSON-RPC2 version 0.1.1
 
 This module implement json-rpc 2.0 protocol in transport-independent way,
 with support for non-blocking client remote procedure call and non-blocking

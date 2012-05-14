@@ -8,14 +8,15 @@ severity = 1
 # pager = 
 # top = 0
 # verbose = 4
-verbose = 11
+#verbose = 11
+verbose = 2
 # include = 
 # exclude = 
 # single-policy = 
 # theme = 
 
 # Use `List::MoreUtils::any' instead of `grep' in boolean context.
-[BuiltinFunctions::ProhibitBooleanGrep]
+[-BuiltinFunctions::ProhibitBooleanGrep]
 # set_themes                         = core pbp performance
 # add_themes                         =
 # severity                           = 2
@@ -227,7 +228,7 @@ severity                           = 3
 
 
 # Write `for(0..20)' instead of `for($i=0; $i<=20; $i++)'.
-[ControlStructures::ProhibitCStyleForLoops]
+[-ControlStructures::ProhibitCStyleForLoops]
 # set_themes                         = core maintenance pbp
 # add_themes                         =
 # severity                           = 2
@@ -331,6 +332,10 @@ severity                           = 4
 # maximum_violations_per_document    = no_limit
 
 
+[-Documentation::PodSpelling]
+spell_command = aspell list -l en
+
+
 # The `=head1 NAME' section should match the package.
 [Documentation::RequirePackageMatchesPodName]
 # set_themes                         = core cosmetic
@@ -349,7 +354,7 @@ severity                           = 2
 
 
 # Organize your POD into the customary sections.
-[Documentation::RequirePodSections]
+[-Documentation::RequirePodSections]
 # set_themes                         = core maintenance pbp
 # add_themes                         =
 # severity                           = 2
@@ -370,6 +375,9 @@ source = module_starter_pbp_0_0_3
 # Valid values: en_AU, en_US.
 # language = 
 language = en_US
+
+
+[-Documentation::RequirePodLinksIncludeText]
 
 
 # Use functions from Carp instead of `warn' or `die'.
@@ -528,6 +536,9 @@ severity                           = 4
 # maximum_violations_per_document    = no_limit
 
 
+[-Miscellanea::ProhibitUnrestrictedNoCritic]
+
+
 # Put source-control keywords in every file.
 [-Miscellanea::RequireRcsKeywords]
 # set_themes                         = core cosmetic pbp
@@ -641,21 +652,8 @@ severity                           = 4
 # forbid = abstract bases close contract last left no record right second set
 
 
-# Write `sub my_function{}' instead of `sub MyFunction{}'.
-[NamingConventions::ProhibitMixedCaseSubs]
-# set_themes                         = core cosmetic pbp
-# add_themes                         =
-# severity                           = 1
-# maximum_violations_per_document    = no_limit
-
-
-# Write `$my_variable = 42' instead of `$MyVariable = 42'.
-[-NamingConventions::ProhibitMixedCaseVars]
-# set_themes                         = core cosmetic pbp
-# add_themes                         =
-# severity                           = 1
-# maximum_violations_per_document    = no_limit
-
+[NamingConventions::Capitalization]
+file_lexical_variables = :no_restriction
 
 # Write `@{ $array_ref }' instead of `@$array_ref'.
 [References::ProhibitDoubleSigils]
@@ -1094,6 +1092,9 @@ severity                           = 2
 # maximum_violations_per_document    = no_limit
 
 
+[-ValuesAndExpressions::RequireConstantVersion]
+
+
 # Warns that you might have used single quotes when you really wanted double-quotes.
 [-ValuesAndExpressions::RequireInterpolationOfMetachars]
 # set_themes                         = core cosmetic pbp
@@ -1160,7 +1161,7 @@ severity                           = 4
 
 
 # Eliminate globals declared with `our' or `use vars'.
-[Variables::ProhibitPackageVars]
+[-Variables::ProhibitPackageVars]
 # set_themes                         = core maintenance pbp
 # add_themes                         =
 # severity                           = 3
