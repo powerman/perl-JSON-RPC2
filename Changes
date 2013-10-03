@@ -1,5 +1,8 @@
 Revision history for JSON-RPC2
 
+0.1.2   Thu Oct  3 17:04:30 EEST 2013
+	Remove MYMETA.*
+
 0.1.1	Sun May 13 06:01:33 EEST 2012
 	Fix requirements.
 
