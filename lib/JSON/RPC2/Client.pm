@@ -4,14 +4,11 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.1.1');    # update POD & Changes & README
+use version; our $VERSION = qv('0.2.0');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
 use Scalar::Util qw( weaken refaddr );
-
-use constant SRV_ERR_MIN => -32768;
-use constant SRV_ERR_MAX => -32000;
 
 
 sub new {
@@ -27,27 +24,70 @@ sub new {
 
 sub notify {
     my ($self, $method, @params) = @_;
+    croak 'method required' if !defined $method;
     return encode_json({
         jsonrpc     => '2.0',
         method      => $method,
+        (!@params ? () : (
         params      => \@params,
+        )),
+    });
+}
+
+sub notify_named {
+    my ($self, $method, @params) = @_;
+    croak 'method required' if !defined $method;
+    croak 'odd number of elements in %params' if @params % 2;
+    my %params = @params;
+    return encode_json({
+        jsonrpc     => '2.0',
+        method      => $method,
+        (!@params ? () : (
+        params      => \%params,
+        )),
     });
 }
 
 sub call {
     my ($self, $method, @params) = @_;
+    croak 'method required' if !defined $method;
+    my ($id, $call) = $self->_get_id();
+    my $request = encode_json({
+        jsonrpc     => '2.0',
+        method      => $method,
+        (!@params ? () : (
+        params      => \@params,
+        )),
+        id          => $id,
+    });
+    return wantarray ? ($request, $call) : $request;
+}
+
+sub call_named {
+    my ($self, $method, @params) = @_;
+    croak 'method required' if !defined $method;
+    croak 'odd number of elements in %params' if @params % 2;
+    my %params = @params;
+    my ($id, $call) = $self->_get_id();
+    my $request = encode_json({
+        jsonrpc     => '2.0',
+        method      => $method,
+        (!@params ? () : (
+        params      => \%params,
+        )),
+        id          => $id,
+    });
+    return wantarray ? ($request, $call) : $request;
+}
+
+sub _get_id {
+    my $self = shift;
     my $id = @{$self->{free_id}} ? pop @{$self->{free_id}} : $self->{next_id}++;
     my $call = {};
     $self->{call}{ refaddr($call) } = $call;
     $self->{id}{ $id } = $call;
     weaken($self->{id}{ $id });
-    my $request = encode_json({
-        jsonrpc     => '2.0',
-        method      => $method,
-        params      => \@params,
-        id          => $id,
-    });
-    return wantarray ? ($request, $call) : $request;
+    return ($id, $call);
 }
 
 sub pending {
@@ -57,12 +97,13 @@ sub pending {
 
 sub cancel {
     my ($self, $call) = @_;
-    delete $self->{call}{ refaddr($call) };
+    croak 'no such request' if !delete $self->{call}{ refaddr($call) };
     return;
 }
 
-sub response {  ## no critic (ProhibitExcessComplexity)
+sub response {      ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     my ($self, $json) = @_;
+    croak 'require 1 param' if @_ != 2;
 
     my $response = eval { decode_json($json) };
     ## no critic (ProhibitCascadingIfElse)
@@ -75,7 +116,7 @@ sub response {  ## no critic (ProhibitExcessComplexity)
     elsif (!defined $response->{jsonrpc} || $response->{jsonrpc} ne '2.0') {
         return 'expect {jsonrpc}="2.0"';
     }
-    elsif (!exists $response->{id} || ref $response->{id}) {
+    elsif (!exists $response->{id} || ref $response->{id} || !defined $response->{id}) {
         return 'expect {id} is scalar';
     }
     elsif (!exists $self->{id}{ $response->{id} }) {
@@ -92,8 +133,9 @@ sub response {  ## no critic (ProhibitExcessComplexity)
             return 'expect {error}{code} is Integer';
         } elsif (!defined $e->{message} || ref $e->{message}) {
             return 'expect {error}{message} is String';
-        } elsif (SRV_ERR_MIN <= $e->{code} && $e->{code} <= SRV_ERR_MAX) {
-            return $e->{message};
+        ## no critic (ProhibitMagicNumbers)
+        } elsif ((3 == keys %{$e} && !exists $e->{data}) || 3 < keys %{$e}) {
+            return 'only optional key must be {error}{data}';
         }
     }
     ## use critic
@@ -102,8 +144,9 @@ sub response {  ## no critic (ProhibitExcessComplexity)
     push @{ $self->{free_id} }, $id;
     my $call = delete $self->{id}{ $id };
     if ($call) {
-        delete $self->{call}{ refaddr($call) };
-    } else {
+        $call = delete $self->{call}{ refaddr($call) };
+    }
+    if (!$call) {
         return; # call was canceled
     }
     return (undef, $response->{result}, $response->{error}, $call);
@@ -120,7 +163,7 @@ JSON::RPC2::Client - Transport-independent json-rpc 2.0 client
 
 =head1 VERSION
 
-This document describes JSON::RPC2::Client version 0.1.1
+This document describes JSON::RPC2::Client version 0.2.0
 
 
 =head1 SYNOPSIS
@@ -130,7 +173,9 @@ This document describes JSON::RPC2::Client version 0.1.1
  $client = JSON::RPC2::Client->new();
 
  $json_request = $client->notify('method', @params);
+ $json_request = $client->notify_named('method', %params);
  ($json_request, $call) = $client->call('method', @params);
+ ($json_request, $call) = $client->call_named('method', %params);
 
  $client->cancel($call);
 
@@ -152,11 +197,11 @@ This document describes JSON::RPC2::Client version 0.1.1
  ($failed, $result, $error) = $client->response($json_response);
  if ($failed) {
     die "bad response: $failed";
- } elsif ($result) {
-    print "method(@params) returned $result\n";
- } else {
+ } elsif ($error) {
     printf "method(@params) failed with code=%d: %s\n",
         $error->{code}, $error->{message};
+ } else {
+    print "method(@params) returned $result\n";
  }
 
 =head1 DESCRIPTION
@@ -181,6 +226,7 @@ client object for each connection to server.
 
 
 =item notify( $remote_method, @remote_params )
+=item notify_named( $remote_method, %remote_params )
 
 Notifications doesn't receive any replies, so they unreliable.
 
@@ -188,6 +234,7 @@ Return ($json_request) - scalar which should be sent to server in any way.
 
 
 =item call( $remote_method, @remote_params )
+=item call_named( $remote_method, %remote_params )
 
 Return ($json_request, $call) - scalar which should be sent to server in
 any way and identifier of this remote procedure call.
@@ -283,7 +330,7 @@ Alex Efros  C<< <powerman-asdf@ya.ru> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
+Copyright (c) 2009,2013, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

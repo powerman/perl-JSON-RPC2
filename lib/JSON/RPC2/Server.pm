@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.1.1');    # update POD & Changes & README
+use version; our $VERSION = qv('0.2.0');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -25,65 +25,96 @@ sub new {
 
 sub register {
     my ($self, $name, $cb) = @_;
-    $self->{method}{ $name } = [ $cb, 1 ];
+    $self->{method}{ $name } = [ $cb, 1, 0 ];
+    return;
+}
+
+sub register_named {
+    my ($self, $name, $cb) = @_;
+    $self->{method}{ $name } = [ $cb, 1, 1 ];
     return;
 }
 
 sub register_nb {
     my ($self, $name, $cb) = @_;
-    $self->{method}{ $name } = [ $cb, 0 ];
+    $self->{method}{ $name } = [ $cb, 0, 0 ];
     return;
 }
 
-sub execute {
+sub register_named_nb {
+    my ($self, $name, $cb) = @_;
+    $self->{method}{ $name } = [ $cb, 0, 1 ];
+    return;
+}
+
+sub execute {   ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     my ($self, $json, $cb) = @_;
+    croak 'require 2 params' if 1+2 != @_;
+    croak 'second param must be callback' if ref $cb ne 'CODE';
+
+    my $error = \&_error;
+    my $done  = \&_done;
+
+    # json
     my $request = eval { decode_json($json) };
     if ($@) {
-        return _error($cb, undef, ERR_PARSE, 'Parse error.');
+        return $error->($cb, undef, ERR_PARSE, 'Parse error.');
     }
     if (!$request || ref $request ne 'HASH') {
-        return _error($cb, undef, ERR_REQ, 'Invalid Request: expect Object.');
+        return $error->($cb, undef, ERR_REQ, 'Invalid Request: expect Object.');
     }
-    if (!defined $request->{jsonrpc} || $request->{jsonrpc} ne '2.0') {
-        return _error($cb, undef, ERR_REQ, 'Invalid Request: expect {jsonrpc}="2.0".');
+
+    # jsonrpc =>
+    if (!defined $request->{jsonrpc} || ref $request->{jsonrpc} || $request->{jsonrpc} ne '2.0') {
+        return $error->($cb, undef, ERR_REQ, 'Invalid Request: expect {jsonrpc}="2.0".');
     }
-    if (!exists $request->{params}) {
-        $request->{params} = [];
-    }
-    # Notification
-    if (!exists $request->{id}) {
-        if (ref $request->{params} eq 'ARRAY') {
-            if ($request->{method} && !ref $request->{method}) {
-                my $method = $self->{method}{ $request->{method} };
-                $method && $method->( @{ $request->{params} } );
-            }
+
+    # id =>
+    my $id;
+    if (exists $request->{id}) {
+        # Request
+        if (ref $request->{id}) {
+            return $error->($cb, undef, ERR_REQ, 'Invalid Request: expect {id} is scalar.');
         }
-        return;
+        $id = $request->{id};
     }
-    # Request
-    if (ref $request->{id}) {
-        return _error($cb, undef, ERR_REQ, 'Invalid Request: expect {id} is scalar.');
+    else {
+        # Notification
+        $error = sub {};
+        $done  = sub {};
     }
-    my $id = $request->{id};
-    if (ref $request->{params} eq 'HASH') {
-        return _error($cb, $id, ERR_PARAMS, 'Invalid params: named params not supported by this method.');
-    }
-    elsif (ref $request->{params} ne 'ARRAY') {
-        return _error($cb, $id, ERR_REQ, 'Invalid Request: expect {params} is Array or Object.');
-    }
+
+    # method =>
     if (!defined $request->{method} || ref $request->{method}) {
-        return _error($cb, $id, ERR_REQ, 'Invalid Request: expect {method} is String.');
+        return $error->($cb, $id, ERR_REQ, 'Invalid Request: expect {method} is String.');
     }
     my $handler = $self->{method}{ $request->{method} };
     if (!$handler) {
-        return _error($cb, $id, ERR_METHOD, 'Method not found.');
+        return $error->($cb, $id, ERR_METHOD, 'Method not found.');
     }
-    my ($method, $is_blocking) = @{$handler};
+    my ($method, $is_blocking, $is_named) = @{$handler};
+
+    # params =>
+    if (!exists $request->{params}) {
+        $request->{params} = $is_named ? {} : [];
+    }
+    if (ref $request->{params} ne 'ARRAY' && ref $request->{params} ne 'HASH') {
+        return $error->($cb, $id, ERR_REQ, 'Invalid Request: expect {params} is Array or Object.');
+    }
+    if (ref $request->{params} ne ($is_named ? 'HASH' : 'ARRAY')) {
+        return $error->($cb, $id, ERR_PARAMS, 'This method expect '.($is_named ? 'named' : 'positional').' params.');
+    }
+    my @params = $is_named ? %{ $request->{params} } : @{ $request->{params} };
+
+    # execute
     if ($is_blocking) {
-        return _done($cb, $id, [ $method->( @{ $request->{params} } ) ]);
+        my @returns = $method->( @params );
+        $done->($cb, $id, \@returns);
     }
-    my $cb_done = sub { _done($cb, $id, \@_) };
-    $method->( $cb_done, @{ $request->{params} } );
+    else {
+        my $cb_done = sub { $done->($cb, $id, \@_) };
+        $method->( $cb_done, @params );
+    }
     return;
 }
 
@@ -98,7 +129,7 @@ sub _done {
 
 sub _error {
     my ($cb, $id, $code, $message, $data) = @_;
-    return $cb->( encode_json({
+    $cb->( encode_json({
         jsonrpc     => '2.0',
         id          => $id,
         error       => {
@@ -107,15 +138,17 @@ sub _error {
             (defined $data ? ( data => $data ) : ()),
         },
     }) );
+    return;
 }
 
 sub _result {
     my ($cb, $id, $result) = @_;
-    return $cb->( encode_json({
+    $cb->( encode_json({
         jsonrpc     => '2.0',
         id          => $id,
         result      => $result,
     }) );
+    return;
 }
 
 
@@ -129,7 +162,7 @@ JSON::RPC2::Server - Transport-independent json-rpc 2.0 server
 
 =head1 VERSION
 
-This document describes JSON::RPC2::Server version 0.1.1
+This document describes JSON::RPC2::Server version 0.2.0
 
 
 =head1 SYNOPSIS
@@ -140,6 +173,8 @@ This document describes JSON::RPC2::Server version 0.1.1
 
     $rpcsrv->register('func1', \&func1);
     $rpcsrv->register_nb('func2', \&func2);
+    $rpcsrv->register_named('func3', \&func3);
+    $rpcsrv->register_named_nb('func4', \&func4);
 
     # receive remote request in $json_request somehow, then:
     $rpcsrv->execute( $json_request, \&send_response );
@@ -170,6 +205,16 @@ This document describes JSON::RPC2::Server version 0.1.1
             $callback->(undef, $err_code, $err_message);
         }
         return;
+    }
+
+    sub func3 {
+        my (%remote_params) = @_;
+        # rest the same as in func1
+    }
+
+    sub func4 {
+        my ($callback, %remote_params) = @_;
+        # rest the same as in func2
     }
 
     #
@@ -209,43 +254,51 @@ Create and return new server object, which can be used to register and
 execute user methods.
 
 =item register( $rpc_method_name, \&method_handler )
+=item register_named( $rpc_method_name, \&method_handler )
 
 Register $rpc_method_name as allowed method name for remote procedure call
 and set \&method_handler as BLOCKING handler for that method.
 
-If there already was some handler set (using register() or register_nb())
-for that $rpc_method_name - it will be replaced by \&method_handler.
+If there already was some handler set (using register() or
+register_named() or register_nb() or register_named_nb()) for that
+$rpc_method_name - it will be replaced by \&method_handler.
 
 While processing request to $rpc_method_name user handler will be called
-with parameters provided by remote side, and should return it result as
-list with 4 elements:
+with parameters provided by remote side (as ARRAY for register() or HASH
+for register_named()), and should return it result as list with 4
+elements:
 
  ($result, $code, $message, $data) = method_handler(@remote_params);
+ ($result, $code, $message, $data) = method_handler(%remote_params);
 
  $result        scalar or complex structure if method call success
  $code          error code (integer, > -32600) if method call failed
  $message       error message (string) if message call failed
  $data          optional scalar with additional error-related data
 
-Either $result or $code should be defined, not both; $message required
+If $code is defined then $result shouldn't be defined; $message required
 only if $code defined.
 
 Return nothing.
 
 =item register_nb( $rpc_method_name, \&nb_method_handler )
+=item register_named_nb( $rpc_method_name, \&nb_method_handler )
 
 Register $rpc_method_name as allowed method name for remote procedure call
 and set \&method_handler as NON-BLOCKING handler for that method.
 
-If there already was some handler set (using register() or register_nb())
-for that $rpc_method_name - it will be replaced by \&method_handler.
+If there already was some handler set (using register() or
+register_named() or register_nb() or register_named_nb()) for that
+$rpc_method_name - it will be replaced by \&method_handler.
 
 While processing request to $rpc_method_name user handler will be called
 with callback needed to return result in first parameter and parameters
-provided by remote side as next parameters, and should call provided callback
-with list with 4 elements when done:
+provided by remote side as next parameters (as ARRAY for register_nb() or
+HASH for register_named_nb()), and should call provided callback with list
+with 4 elements when done:
 
  nb_method_handler($callback, @remote_params);
+ nb_method_handler($callback, %remote_params);
 
  # somewhere in that method handlers:
  $callback->($result, $code, $message, $data);

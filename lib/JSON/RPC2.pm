@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.1.2');    # update POD & Changes & README
+use version; our $VERSION = qv('0.2.0');    # update POD & Changes & README
 
 
 1; # Magic true value required at end of module
@@ -17,7 +17,7 @@ JSON::RPC2 - Transport-independent implementation of json-rpc 2.0
 
 =head1 VERSION
 
-This document describes JSON::RPC2 version 0.1.2
+This document describes JSON::RPC2 version 0.2.0
 
 
 =head1 SYNOPSIS
@@ -124,15 +124,6 @@ event-based style. But this feature doesn't looks really useful so it
 implementation delayed until it become clear it's needed to avoid needless
 complexity.
 
-=item Named parameters
-
-Not supported neither in Server nor in Client.
-
-While it's ease to add support in Client, it's still not clear how to
-define methods with named parameters on Server - because perl has no native
-support for named parameters and there too many different and incompatible
-ways to add that support.
-
 =back
 
 No bugs have been reported.
@@ -149,7 +140,7 @@ Alex Efros  C<< <powerman-asdf@ya.ru> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
+Copyright (c) 2009,2013, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

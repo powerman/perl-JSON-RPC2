@@ -1,5 +1,11 @@
 Revision history for JSON-RPC2
 
+0.2.0   Sat Nov  9 03:43:05 EET 2013
+	Add notify_named(), call_named(), register_named(), register_named_nb().
+	Fix response() for cancel()ed calls when user keeps $call.
+	Croak when methods called with wrong params.
+	Add more tests.
+
 0.1.2   Thu Oct  3 17:04:30 EEST 2013
 	Remove MYMETA.*
 
