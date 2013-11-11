@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.2.0');    # update POD & Changes & README
+use version; our $VERSION = qv('0.2.1');    # update POD & Changes & README
 
 
 1; # Magic true value required at end of module
@@ -17,7 +17,7 @@ JSON::RPC2 - Transport-independent implementation of json-rpc 2.0
 
 =head1 VERSION
 
-This document describes JSON::RPC2 version 0.2.0
+This document describes JSON::RPC2 version 0.2.1
 
 
 =head1 SYNOPSIS

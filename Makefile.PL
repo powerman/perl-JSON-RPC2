@@ -9,6 +9,7 @@ requires	'version';
 requires	'JSON::XS';
 
 test_requires	'Test::More';
+test_requires	'Test::Exception';
 
 recommends      'Test::CheckManifest'   => '0.9';
 recommends      'Test::Perl::Critic';

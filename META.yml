@@ -5,6 +5,7 @@ author:
   - 'Alex Efros <powerman-asdf@ya.ru>'
 build_requires:
   ExtUtils::MakeMaker: 6.36
+  Test::Exception: 0
   Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.36
@@ -31,4 +32,4 @@ requires:
   version: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.002000
+version: 0.002001

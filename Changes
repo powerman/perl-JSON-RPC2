@@ -1,5 +1,8 @@
 Revision history for JSON-RPC2
 
+0.2.1   Mon Nov 11 06:20:05 EET 2013
+	Fix requirements.
+
 0.2.0   Sat Nov  9 03:43:05 EET 2013
 	Add notify_named(), call_named(), register_named(), register_named_nb().
 	Fix response() for cancel()ed calls when user keeps $call.
