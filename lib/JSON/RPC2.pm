@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.2.1');    # update POD & Changes & README
+use version; our $VERSION = qv('0.3.0');    # update POD & Changes & README
 
 
 1; # Magic true value required at end of module
@@ -17,7 +17,7 @@ JSON::RPC2 - Transport-independent implementation of json-rpc 2.0
 
 =head1 VERSION
 
-This document describes JSON::RPC2 version 0.2.1
+This document describes JSON::RPC2 version 0.3.0
 
 
 =head1 SYNOPSIS
@@ -140,7 +140,7 @@ Alex Efros  C<< <powerman-asdf@ya.ru> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009,2013, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
+Copyright (c) 2009,2013,2014 Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

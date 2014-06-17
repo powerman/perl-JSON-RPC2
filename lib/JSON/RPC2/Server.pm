@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.2.1');    # update POD & Changes & README
+use version; our $VERSION = qv('0.3.0');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -56,7 +56,7 @@ sub execute {   ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     my $done  = \&_done;
 
     # json
-    my $request = eval { decode_json($json) };
+    my $request = ref $json ? $json : eval { decode_json($json) };
     if ($@) {
         return $error->($cb, undef, ERR_PARSE, 'Parse error.');
     }
@@ -162,7 +162,7 @@ JSON::RPC2::Server - Transport-independent json-rpc 2.0 server
 
 =head1 VERSION
 
-This document describes JSON::RPC2::Server version 0.2.1
+This document describes JSON::RPC2::Server version 0.3.0
 
 
 =head1 SYNOPSIS
@@ -310,6 +310,8 @@ register() above.
 Return nothing.
 
 =item execute( $json_request, $callback )
+
+The $json_request can be either JSON string or HASHREF.
 
 Parse $json_request and executed registered user handlers. Reply will be
 sent into $callback, when ready:

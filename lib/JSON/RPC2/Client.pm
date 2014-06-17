@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.2.1');    # update POD & Changes & README
+use version; our $VERSION = qv('0.3.0');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -105,7 +105,7 @@ sub response {      ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     my ($self, $json) = @_;
     croak 'require 1 param' if @_ != 2;
 
-    my $response = eval { decode_json($json) };
+    my $response = ref $json ? $json : eval { decode_json($json) };
     ## no critic (ProhibitCascadingIfElse)
     if ($@) {
         return 'Parse error';
@@ -163,7 +163,7 @@ JSON::RPC2::Client - Transport-independent json-rpc 2.0 client
 
 =head1 VERSION
 
-This document describes JSON::RPC2::Client version 0.2.1
+This document describes JSON::RPC2::Client version 0.3.0
 
 
 =head1 SYNOPSIS
@@ -251,6 +251,8 @@ calls was just replied or cancel() pending calls.
 
 
 =item response( $json_response )
+
+The $json_response can be either JSON string or HASHREF.
 
 Will parse $json_response and return list with 4 elements:
 
