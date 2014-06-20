@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.3.0');    # update POD & Changes & README
+use version; our $VERSION = qv('0.3.1');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -252,7 +252,8 @@ calls was just replied or cancel() pending calls.
 
 =item response( $json_response )
 
-The $json_response can be either JSON string or HASHREF.
+The $json_response can be either JSON string or HASHREF (useful with
+C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
 
 Will parse $json_response and return list with 4 elements:
 
@@ -332,7 +333,7 @@ Alex Efros  C<< <powerman-asdf@ya.ru> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009,2013, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
+Copyright (c) 2009,2013-2014, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

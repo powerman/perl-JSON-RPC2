@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.3.0');    # update POD & Changes & README
+use version; our $VERSION = qv('0.3.1');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -311,7 +311,8 @@ Return nothing.
 
 =item execute( $json_request, $callback )
 
-The $json_request can be either JSON string or HASHREF.
+The $json_request can be either JSON string or HASHREF (useful with
+C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
 
 Parse $json_request and executed registered user handlers. Reply will be
 sent into $callback, when ready:
@@ -359,7 +360,7 @@ Alex Efros  C<< <powerman-asdf@ya.ru> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
+Copyright (c) 2009,2014, Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

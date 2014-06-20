@@ -1,5 +1,8 @@
 Revision history for JSON-RPC2
 
+0.3.1   Fri Jun 20 11:39:47 EEST 2014
+	Improve doc.
+
 0.3.0   Wed Jun 18 01:15:11 EEST 2014
 	Add support for processing already decoded JSON.
 
