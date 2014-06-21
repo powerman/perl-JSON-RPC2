@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.3.1');    # update POD & Changes & README
+use version; our $VERSION = qv('0.4.0');    # update POD & Changes & README
 
 
 1; # Magic true value required at end of module

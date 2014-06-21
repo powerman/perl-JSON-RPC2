@@ -1,5 +1,8 @@
 Revision history for JSON-RPC2
 
+0.4.0   Sat Jun 21 14:31:30 EEST 2014
+	Now execute() will run callback with empty string after notifications.
+
 0.3.1   Fri Jun 20 11:39:47 EEST 2014
 	Improve doc.
 

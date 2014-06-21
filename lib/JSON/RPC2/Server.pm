@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.3.1');    # update POD & Changes & README
+use version; our $VERSION = qv('0.4.0');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -80,8 +80,8 @@ sub execute {   ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     }
     else {
         # Notification
-        $error = sub {};
-        $done  = sub {};
+        $error = \&_nothing;
+        $done  = \&_nothing;
     }
 
     # method =>
@@ -148,6 +148,12 @@ sub _result {
         id          => $id,
         result      => $result,
     }) );
+    return;
+}
+
+sub _nothing {
+    my ($cb) = @_;
+    $cb->( q{} );
     return;
 }
 
@@ -314,10 +320,14 @@ Return nothing.
 The $json_request can be either JSON string or HASHREF (useful with
 C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
 
-Parse $json_request and executed registered user handlers. Reply will be
+Parse $json_request and execute registered user handlers. Reply will be
 sent into $callback, when ready:
 
  $callback->( $json_response );
+
+The $callback will be always executed after finishing processing
+$json_request - even if request type was "notification" (in this case
+$json_response will be an empty string).
 
 Return nothing.
 

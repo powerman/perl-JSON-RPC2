@@ -116,19 +116,19 @@ SKIP: {
 }
 
 execute($client->notify('e'));
-ok !$Response,
+is $Response, q{},
     'e';
 is $Called, 'e';
 execute($client->notify_named('e', first => 42));
-ok !$Response;
+is $Response, q{};
 ok !$Called;
 
 execute($client->notify('f', 42));
-ok !$Response,
+is $Response, q{},
     'f';
 ok !$Called;
 execute($client->notify_named('f'));
-ok !$Response;
+is $Response, q{};
 is $Called, 'f';
 
 
@@ -139,5 +139,5 @@ sub execute {
     my ($json) = @_;
     $Response = undef;
     $Called = undef;
-    $server->execute($json, sub { $Response = decode_json($_[0]) });
+    $server->execute($json, sub { $Response = $_[0] ? decode_json($_[0]) : $_[0] });
 }
