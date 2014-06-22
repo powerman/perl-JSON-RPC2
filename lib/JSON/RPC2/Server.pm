@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.4.0');    # update POD & Changes & README
+use version; our $VERSION = qv('1.0.0');    # update Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -47,22 +47,54 @@ sub register_named_nb {
     return;
 }
 
-sub execute {   ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
+sub execute {
     my ($self, $json, $cb) = @_;
     croak 'require 2 params' if 1+2 != @_;
     croak 'second param must be callback' if ref $cb ne 'CODE';
 
-    my $error = \&_error;
-    my $done  = \&_done;
-
-    # json
+    undef $@;
     my $request = ref $json ? $json : eval { decode_json($json) };
     if ($@) {
-        return $error->($cb, undef, ERR_PARSE, 'Parse error.');
+        return _error($cb, undef, ERR_PARSE, 'Parse error.');
     }
-    if (!$request || ref $request ne 'HASH') {
-        return $error->($cb, undef, ERR_REQ, 'Invalid Request: expect Object.');
+    if (ref $request eq 'HASH') {
+        return $self->_execute($request, $cb);
     }
+    if (ref $request ne 'ARRAY') {
+        return _error($cb, undef, ERR_REQ, 'Invalid Request: expect Array or Object.');
+    }
+    if (!@{$request}) {
+        return _error($cb, undef, ERR_REQ, 'Invalid Request: empty Array.');
+    }
+
+    my $pending = @{$request};
+    my @responses;
+    my $cb_acc = sub {
+        my ($json_response) = @_;
+        if ($json_response) {
+            push @responses, $json_response;
+        }
+        if (!--$pending) {
+            if (@responses) {
+                $cb->( '[' . join(q{,}, @responses) . ']' );
+            } else {
+                $cb->( q{} );
+            }
+        }
+        return;
+    };
+    for (@{$request}) {
+        $self->_execute($_, $cb_acc);
+    }
+
+    return;
+}
+
+sub _execute {
+    my ($self, $request, $cb) = @_;
+
+    my $error = \&_error;
+    my $done  = \&_done;
 
     # jsonrpc =>
     if (!defined $request->{jsonrpc} || ref $request->{jsonrpc} || $request->{jsonrpc} ne '2.0') {
@@ -77,11 +109,6 @@ sub execute {   ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
             return $error->($cb, undef, ERR_REQ, 'Invalid Request: expect {id} is scalar.');
         }
         $id = $request->{id};
-    }
-    else {
-        # Notification
-        $error = \&_nothing;
-        $done  = \&_nothing;
     }
 
     # method =>
@@ -105,6 +132,13 @@ sub execute {   ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
         return $error->($cb, $id, ERR_PARAMS, 'This method expect '.($is_named ? 'named' : 'positional').' params.');
     }
     my @params = $is_named ? %{ $request->{params} } : @{ $request->{params} };
+
+    # id => (continue)
+    if (!exists $request->{id}) {
+        # Notification
+        $error = \&_nothing;
+        $done  = \&_nothing;
+    }
 
     # execute
     if ($is_blocking) {
@@ -161,14 +195,11 @@ sub _nothing {
 1; # Magic true value required at end of module
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 JSON::RPC2::Server - Transport-independent json-rpc 2.0 server
-
-
-=head1 VERSION
-
-This document describes JSON::RPC2::Server version 0.3.0
 
 
 =head1 SYNOPSIS
@@ -260,6 +291,7 @@ Create and return new server object, which can be used to register and
 execute user methods.
 
 =item register( $rpc_method_name, \&method_handler )
+
 =item register_named( $rpc_method_name, \&method_handler )
 
 Register $rpc_method_name as allowed method name for remote procedure call
@@ -288,6 +320,7 @@ only if $code defined.
 Return nothing.
 
 =item register_nb( $rpc_method_name, \&nb_method_handler )
+
 =item register_named_nb( $rpc_method_name, \&nb_method_handler )
 
 Register $rpc_method_name as allowed method name for remote procedure call
@@ -317,8 +350,8 @@ Return nothing.
 
 =item execute( $json_request, $callback )
 
-The $json_request can be either JSON string or HASHREF (useful with
-C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
+The $json_request can be either JSON string or ARRAYREF/HASHREF (useful
+with C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
 
 Parse $json_request and execute registered user handlers. Reply will be
 sent into $callback, when ready:

@@ -2,21 +2,21 @@ use warnings;
 use strict;
 use t::share;
 
-# ЗАПРОС:
+# REQUEST:
 # {
 #   "jsonrpc": "2.0",
-#   "id": 123,                          # кроме notify()
+#   "id": 123,                          # except notify()
 #   "method": "remote_func",
 #   "params": [1,'a',123],              # remote_func(1,'a',123)
-#   или
+#   or
 #   "params": {name=>'Alex',…},         # remote_func(name => 'Alex', …)
 # }
-# ОТВЕТ:
+# RESPONSE:
 # {
 #   "jsonrpc": "2.0",
 #   "id": 123,
 #   "result": …,
-#   или
+#   or
 #   "error": {
 #       "code": -32000,
 #       "message": "some error",

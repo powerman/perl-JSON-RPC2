@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.4.0');    # update POD & Changes & README
+use version; our $VERSION = qv('1.0.0');    # update Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use JSON::XS;
@@ -20,6 +20,15 @@ sub new {
         id          => {},
     };
     return bless $self, $class;
+}
+
+sub batch {
+    my ($self, @requests) = @_;
+    my @call  = grep {ref}  @requests;
+    @requests = grep {!ref} @requests;
+    croak 'at least one request required' if !@requests;
+    my $request = '['.join(q{,}, @requests).']';
+    return ($request, @call);
 }
 
 sub notify {
@@ -101,44 +110,68 @@ sub cancel {
     return;
 }
 
+sub batch_response {
+    my ($self, $json) = @_;
+    croak 'require 1 param' if @_ != 2;
+
+    undef $@;
+    my $response = ref $json ? $json : eval { decode_json($json) };
+    if ($@) {
+        return [ 'Parse error' ];
+    }
+    if ($response && ref $response eq 'HASH') {
+        return [ $self->response($response) ];
+    }
+    if (!$response || ref $response ne 'ARRAY') {
+        return [ 'expect Array or Object' ];
+    }
+    if (!@{$response}) {
+        return [ 'empty Array' ];
+    }
+
+    return map {[ $self->response($_) ]} @{$response};
+}
+
 sub response {      ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     my ($self, $json) = @_;
     croak 'require 1 param' if @_ != 2;
 
+    undef $@;
     my $response = ref $json ? $json : eval { decode_json($json) };
-    ## no critic (ProhibitCascadingIfElse)
     if ($@) {
         return 'Parse error';
     }
-    elsif (!$response || ref $response ne 'HASH') {
+    if (ref $response ne 'HASH') {
         return 'expect Object';
     }
-    elsif (!defined $response->{jsonrpc} || $response->{jsonrpc} ne '2.0') {
+    if (!defined $response->{jsonrpc} || $response->{jsonrpc} ne '2.0') {
         return 'expect {jsonrpc}="2.0"';
     }
-    elsif (!exists $response->{id} || ref $response->{id} || !defined $response->{id}) {
+    if (!exists $response->{id} || ref $response->{id} || !defined $response->{id}) {
         return 'expect {id} is scalar';
     }
-    elsif (!exists $self->{id}{ $response->{id} }) {
+    if (!exists $self->{id}{ $response->{id} }) {
         return 'unknown {id}';
     }
-    elsif (!(exists $response->{result} xor exists $response->{error})) {
+    if (!(exists $response->{result} xor exists $response->{error})) {
         return 'expect {result} or {error}';
     }
-    elsif (exists $response->{error}) {
+    if (exists $response->{error}) {
         my $e = $response->{error};
         if (ref $e ne 'HASH') {
             return 'expect {error} is Object';
-        } elsif (!defined $e->{code} || ref $e->{code} || $e->{code} !~ /\A-?\d+\z/xms) {
+        }
+        if (!defined $e->{code} || ref $e->{code} || $e->{code} !~ /\A-?\d+\z/xms) {
             return 'expect {error}{code} is Integer';
-        } elsif (!defined $e->{message} || ref $e->{message}) {
+        }
+        if (!defined $e->{message} || ref $e->{message}) {
             return 'expect {error}{message} is String';
+        }
         ## no critic (ProhibitMagicNumbers)
-        } elsif ((3 == keys %{$e} && !exists $e->{data}) || 3 < keys %{$e}) {
+        if ((3 == keys %{$e} && !exists $e->{data}) || 3 < keys %{$e}) {
             return 'only optional key must be {error}{data}';
         }
     }
-    ## use critic
 
     my $id = $response->{id};
     push @{ $self->{free_id} }, $id;
@@ -156,14 +189,11 @@ sub response {      ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
 1; # Magic true value required at end of module
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 JSON::RPC2::Client - Transport-independent json-rpc 2.0 client
-
-
-=head1 VERSION
-
-This document describes JSON::RPC2::Client version 0.3.0
 
 
 =head1 SYNOPSIS
@@ -177,9 +207,22 @@ This document describes JSON::RPC2::Client version 0.3.0
  ($json_request, $call) = $client->call('method', @params);
  ($json_request, $call) = $client->call_named('method', %params);
 
+ ($json_request, @call) = $client->batch(
+    $client->call('method1', @params),
+    $client->call('method2', @params),
+    $client->notify('method', @params),
+    $client->call_named('method', %params),
+    $client->notify_named('method', %params),
+ );
+
  $client->cancel($call);
 
  ($failed, $result, $error, $call) = $client->response($json_response);
+
+ for ($client->batch_response($json_response)) {
+    ($failed, $result, $error, $call) = @{ $_ };
+    ...
+ }
 
  @call = $client->pending();
 
@@ -224,16 +267,16 @@ Create and return new client object, which can be used to generate requests
 Each client object keep track of request IDs, so you must use dedicated
 client object for each connection to server.
 
-
 =item notify( $remote_method, @remote_params )
+
 =item notify_named( $remote_method, %remote_params )
 
 Notifications doesn't receive any replies, so they unreliable.
 
 Return ($json_request) - scalar which should be sent to server in any way.
 
-
 =item call( $remote_method, @remote_params )
+
 =item call_named( $remote_method, %remote_params )
 
 Return ($json_request, $call) - scalar which should be sent to server in
@@ -249,11 +292,41 @@ In scalar context return only $json_request - this enough for simple
 blocking clients which doesn't need to detect which of several pending()
 calls was just replied or cancel() pending calls.
 
+=item batch( $json_request1, $json_request2, $call2, $json_request3, … )
+
+Return ($json_request, @call) - scalar which should be sent to server in
+any way and identifiers of these remote procedure calls (they'll be in
+same order as they was in params). These two example are equivalent:
+
+    ($json_request, $call1, $call3) = $client->batch(
+        $client->call('method1'),
+        $client->notify('method2'),
+        $client->call('method3'),
+    );
+
+    ($json1, $call1) = $client->call('method1');
+    $json2           = $client->notify('method2');
+    ($json3, $call3) = $client->call('method3');
+    $json_request = $client->batch($json1, $json2, $json3);
+
+If you're using batch() to send some requests then you should process
+RPC server's responses using batch_response(), not response().
+
+=item batch_response( $json_response )
+
+The $json_response can be either JSON string or ARRAYREF/HASHREF (useful
+with C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
+
+Will parse $json_response and return list with ARRAYREFs, which contain
+4 elements returned by response().
+
+It is safe to always use batch_response() instead of response(), even if
+you don't send batch() requests at all.
 
 =item response( $json_response )
 
-The $json_response can be either JSON string or HASHREF (useful with
-C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
+The $json_response can be either JSON string or HASHREF (useful
+with C<< $handle->push_read(json => sub{...}) >> from L<AnyEvent::Handle>).
 
 Will parse $json_response and return list with 4 elements:
 
@@ -280,6 +353,8 @@ which was placed in it after calling call().
 There also special case when all 4 values will be undefined - that happens
 if $json_response was related to call which was already cancel()ed by user.
 
+If you're using batch() to send some requests then you should process
+RPC server's responses using batch_response(), not response().
 
 =item cancel( $call )
 
@@ -288,7 +363,6 @@ processing related request and will send response when ready, but that
 response will be ignored by client's response().
 
 Return nothing.
-
 
 =item pending()
 

@@ -2,13 +2,13 @@ use warnings;
 use strict;
 use t::share;
 
-# ЗАПРОС:
+# REQUEST:
 # {
 #   "jsonrpc": "2.0",
-#   "id": 123,                          # кроме notify()
+#   "id": 123,                          # except notify()
 #   "method": "remote_func",
 #   "params": [1,'a',123],              # remote_func(1,'a',123)
-#   или
+#   or
 #   "params": {name=>'Alex',…},         # remote_func(name => 'Alex', …)
 # }
 
@@ -18,18 +18,18 @@ $server->register('func', sub{ return 42 });
 my $Response;
 
 # - execute:
-#   * принимает ровно 2 параметра
+#   * need 2 params
 throws_ok { $server->execute()                  } qr/2 params/;
 throws_ok { $server->execute("")                } qr/2 params/;
 throws_ok { $server->execute("",sub{},undef)    } qr/2 params/;
-#   * второй параметр это ссылка на процедуру
+#   * second param is CODE
 throws_ok { $server->execute("",undef)          } qr/callback/;
 throws_ok { $server->execute("",$server)        } qr/callback/;
 throws_ok { $server->execute("",[])             } qr/callback/;
 throws_ok { $server->execute("",{})             } qr/callback/;
 
-# - принятый от клиента json:
-#   * не json
+# - received from client json is:
+#   * not a json
 
 execute(undef);
 is $Response->{error}{code}, -32700,
@@ -41,14 +41,14 @@ is $Response->{error}{code}, -32700;
 is $Response->{error}{message}, 'Parse error.';
 
 execute([]);
-is $Response->{error}{code}, -32700;
-is $Response->{error}{message}, 'Parse error.';
+is $Response->{error}{code}, -32600;
+is $Response->{error}{message}, 'Invalid Request: empty Array.';
 
 execute({});
-is $Response->{error}{code}, -32700;
-is $Response->{error}{message}, 'Parse error.';
+is $Response->{error}{code}, -32600;
+is $Response->{error}{message}, 'Invalid Request: expect {jsonrpc}="2.0".';
 
-#   * не хеш (Object)
+#   * not an Object
 
 execute('null');
 is $Response->{error}{code}, -32700,
@@ -57,11 +57,11 @@ is $Response->{error}{message}, 'Parse error.';
 
 execute('true');
 is $Response->{error}{code}, -32600;
-is $Response->{error}{message}, 'Invalid Request: expect Object.';
+is $Response->{error}{message}, 'Invalid Request: expect Array or Object.';
 
 execute('false');
 is $Response->{error}{code}, -32600;
-is $Response->{error}{message}, 'Invalid Request: expect Object.';
+is $Response->{error}{message}, 'Invalid Request: expect Array or Object.';
 
 execute('3.14');
 is $Response->{error}{code}, -32700;
@@ -73,9 +73,9 @@ is $Response->{error}{message}, 'Parse error.';
 
 execute('[]');
 is $Response->{error}{code}, -32600;
-is $Response->{error}{message}, 'Invalid Request: expect Object.';
+is $Response->{error}{message}, 'Invalid Request: empty Array.';
 
-#   * нет "jsonrpc"
+#   * absent "jsonrpc"
 
 execute('{}');
 is $Response->{error}{code}, -32600,
@@ -86,7 +86,7 @@ execute('{"key":0}');
 is $Response->{error}{code}, -32600;
 is $Response->{error}{message}, 'Invalid Request: expect {jsonrpc}="2.0".';
 
-#   * значение "jsonrpc" не "2.0"
+#   * value of "jsonrpc" isn't "2.0"
 
 execute('{"jsonrpc":null}');
 is $Response->{error}{code}, -32600,
@@ -129,7 +129,7 @@ execute('{"jsonrpc":"2.00"}');
 is $Response->{error}{code}, -32600;
 is $Response->{error}{message}, 'Invalid Request: expect {jsonrpc}="2.0".';
 
-#   * значение "id" это не: null, число, строка
+#   * value of "id" isn't: null, number or string
 
 execute('{"jsonrpc":"2.0","id":true}');
 is $Response->{error}{code}, -32600,
@@ -148,7 +148,7 @@ execute('{"jsonrpc":"2.0","id":{}}');
 is $Response->{error}{code}, -32600;
 is $Response->{error}{message}, 'Invalid Request: expect {id} is scalar.';
 
-#   * значение "method" это не число/строка
+#   * value of "method" isn't number/string
 
 execute('{"jsonrpc":"2.0","id":null}');
 is $Response->{error}{code}, -32600,
@@ -171,7 +171,7 @@ execute('{"jsonrpc":"2.0","id":0,"method":{}}');
 is $Response->{error}{code}, -32600;
 is $Response->{error}{message}, 'Invalid Request: expect {method} is String.';
 
-#   * значение "method" это строка, не 'func'
+#   * value of "method" isn't a string, not a 'func'
 
 execute('{"jsonrpc":"2.0","id":0,"method":0}');
 is $Response->{error}{code}, -32601,
@@ -186,7 +186,7 @@ execute('{"jsonrpc":"2.0","id":0,"method":"bad method"}');
 is $Response->{error}{code}, -32601;
 is $Response->{error}{message}, 'Method not found.';
 
-#   * "method":"func", значение "params" не массив/хеш
+#   * "method":"func", value of "params" isn't ARRAY/HASH
 
 execute('{"jsonrpc":"2.0","id":0,"method":"func","params":null}');
 is $Response->{error}{code}, -32600,

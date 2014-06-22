@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.4.0');    # update POD & Changes & README
+use version; our $VERSION = qv('1.0.0');    # update Changes & README
 
 
 1; # Magic true value required at end of module
@@ -13,11 +13,6 @@ __END__
 =head1 NAME
 
 JSON::RPC2 - Transport-independent implementation of json-rpc 2.0
-
-
-=head1 VERSION
-
-This document describes JSON::RPC2 version 0.3.0
 
 
 =head1 SYNOPSIS
@@ -112,19 +107,6 @@ None reported.
 
 
 =head1 BUGS AND LIMITATIONS
-
-=over
-
-=item Batch/Multicall feature
-
-Not supported neither in Server nor in Client.
-
-It may be cool to have parallel request processing allowed in spec using
-event-based style. But this feature doesn't looks really useful so it
-implementation delayed until it become clear it's needed to avoid needless
-complexity.
-
-=back
 
 No bugs have been reported.
 

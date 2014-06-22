@@ -1,5 +1,8 @@
 Revision history for JSON-RPC2
 
+1.0.0   Sun Jun 22 09:11:25 EEST 2014
+	Added Batch support.
+
 0.4.0   Sat Jun 21 14:31:30 EEST 2014
 	Now execute() will run callback with empty string after notifications.
 

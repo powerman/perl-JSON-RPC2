@@ -22,6 +22,8 @@ t/00.load.t
 t/01.export.t
 t/blocking.t
 t/blocking_hashref.t
+t/client-batch.t
+t/client-batch_response.t
 t/client-call.t
 t/client-call_named.t
 t/client-notify.t
@@ -32,6 +34,7 @@ t/manifest.t
 t/perlcritic.t
 t/pod-coverage.t
 t/pod.t
+t/server-batch.t
 t/server-errors.t
 t/server-execute.t
 t/share.pm

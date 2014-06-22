@@ -120,12 +120,14 @@ is $Response, q{},
     'e';
 is $Called, 'e';
 execute($client->notify_named('e', first => 42));
-is $Response, q{};
+is $Response->{error}{code}, -32602;
+is $Response->{error}{message}, 'This method expect positional params.';
 ok !$Called;
 
 execute($client->notify('f', 42));
-is $Response, q{},
+is $Response->{error}{code}, -32602,
     'f';
+is $Response->{error}{message}, 'This method expect named params.';
 ok !$Called;
 execute($client->notify_named('f'));
 is $Response, q{};
