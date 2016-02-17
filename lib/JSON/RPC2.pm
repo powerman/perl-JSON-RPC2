@@ -1,18 +1,26 @@
 package JSON::RPC2;
-
+use 5.010001;
 use warnings;
 use strict;
+use utf8;
 use Carp;
 
-use version; our $VERSION = qv('1.0.0');    # update Changes & README
+our $VERSION = 'v1.0.0';
 
 
 1; # Magic true value required at end of module
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
-JSON::RPC2 - Transport-independent implementation of json-rpc 2.0
+JSON::RPC2 - Transport-independent implementation of JSON-RPC 2.0
+
+
+=head1 VERSION
+
+This document describes JSON::RPC2 version v1.0.0
 
 
 =head1 SYNOPSIS
@@ -22,7 +30,7 @@ See L<JSON::RPC2::Server> and L<JSON::RPC2::Client> for usage examples.
 
 =head1 DESCRIPTION
 
-This module implement json-rpc 2.0 protocol in transport-independent way.
+This module implement JSON-RPC 2.0 protocol in transport-independent way.
 It was very surprising for me to find on CPAN a lot of transport-dependent
 implementations of (by nature) transport-independent protocol!
 
@@ -86,67 +94,63 @@ too complex and bloated for me, I prefer small and simple solutions.
 =back
 
 
-=head1 DIAGNOSTICS
+=head1 SUPPORT
 
-None.
+=head2 Bugs / Feature Requests
 
+Please report any bugs or feature requests through the issue tracker
+at L<https://github.com/powerman/perl-JSON-RPC2/issues>.
+You will be notified automatically of any progress on your issue.
 
-=head1 CONFIGURATION AND ENVIRONMENT
+=head2 Source Code
 
-JSON::RPC2 requires no configuration files or environment variables.
+This is open source software. The code repository is available for
+public review and contribution under the terms of the license.
+Feel free to fork the repository and submit pull requests.
 
+L<https://github.com/powerman/perl-JSON-RPC2>
 
-=head1 DEPENDENCIES
+    git clone https://github.com/powerman/perl-JSON-RPC2.git
 
- JSON::XS
+=head2 Resources
 
+=over
 
-=head1 INCOMPATIBILITIES
+=item * MetaCPAN Search
 
-None reported.
+L<https://metacpan.org/search?q=JSON-RPC2>
 
+=item * CPAN Ratings
 
-=head1 BUGS AND LIMITATIONS
+L<http://cpanratings.perl.org/dist/JSON-RPC2>
 
-No bugs have been reported.
+=item * AnnoCPAN: Annotated CPAN documentation
 
-Please report any bugs or feature requests to
-C<bug-json-rpc2@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
+L<http://annocpan.org/dist/JSON-RPC2>
+
+=item * CPAN Testers Matrix
+
+L<http://matrix.cpantesters.org/?dist=JSON-RPC2>
+
+=item * CPANTS: A CPAN Testing Service (Kwalitee)
+
+L<http://cpants.cpanauthors.org/dist/JSON-RPC2>
+
+=back
 
 
 =head1 AUTHOR
 
-Alex Efros  C<< <powerman-asdf@ya.ru> >>
+Alex Efros E<lt>powerman@cpan.orgE<gt>
 
 
-=head1 LICENSE AND COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2009,2013,2014 Alex Efros C<< <powerman-asdf@ya.ru> >>. All rights reserved.
+This software is Copyright (c) 2009-2014 by Alex Efros E<lt>powerman@cpan.orgE<gt>.
 
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
+This is free software, licensed under:
+
+  The MIT (X11) License
 
 
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
+=cut
