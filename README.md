@@ -7,7 +7,7 @@ JSON::RPC2 - Transport-independent implementation of JSON-RPC 2.0
 
 # VERSION
 
-This document describes JSON::RPC2 version v1.0.0
+This document describes JSON::RPC2 version v2.0.0
 
 # SYNOPSIS
 

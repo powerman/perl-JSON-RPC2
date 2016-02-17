@@ -53,15 +53,15 @@
    "provides" : {
       "JSON::RPC2" : {
          "file" : "lib/JSON/RPC2.pm",
-         "version" : "v1.0.0"
+         "version" : "v2.0.0"
       },
       "JSON::RPC2::Client" : {
          "file" : "lib/JSON/RPC2/Client.pm",
-         "version" : "v1.0.0"
+         "version" : "v2.0.0"
       },
       "JSON::RPC2::Server" : {
          "file" : "lib/JSON/RPC2/Server.pm",
-         "version" : "v1.0.0"
+         "version" : "v2.0.0"
       }
    },
    "release_status" : "stable",
@@ -76,6 +76,6 @@
          "web" : "https://github.com/powerman/perl-JSON-RPC2"
       }
    },
-   "version" : "v1.0.0"
+   "version" : "v2.0.0"
 }
 

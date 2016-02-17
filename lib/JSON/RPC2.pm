@@ -5,7 +5,7 @@ use strict;
 use utf8;
 use Carp;
 
-our $VERSION = 'v1.0.0';
+our $VERSION = 'v2.0.0';
 
 
 1; # Magic true value required at end of module
@@ -20,7 +20,7 @@ JSON::RPC2 - Transport-independent implementation of JSON-RPC 2.0
 
 =head1 VERSION
 
-This document describes JSON::RPC2 version v1.0.0
+This document describes JSON::RPC2 version v2.0.0
 
 
 =head1 SYNOPSIS

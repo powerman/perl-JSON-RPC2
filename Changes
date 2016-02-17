@@ -1,6 +1,8 @@
 Revision history for JSON-RPC2
 
 {{$NEXT}}
+
+v2.0.0  2016-02-17 21:21:25 EET
 	- Switch to Dist::Milla.
 
 1.0.0   2014-06-22 09:11:25 EEST

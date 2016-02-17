@@ -5,7 +5,7 @@ use strict;
 use utf8;
 use Carp;
 
-our $VERSION = 'v1.0.0';
+our $VERSION = 'v2.0.0';
 
 use JSON::XS;
 use Scalar::Util qw( weaken refaddr );
@@ -198,7 +198,7 @@ JSON::RPC2::Client - Transport-independent JSON-RPC 2.0 client
 
 =head1 VERSION
 
-This document describes JSON::RPC2::Client version v1.0.0
+This document describes JSON::RPC2::Client version v2.0.0
 
 
 =head1 SYNOPSIS
