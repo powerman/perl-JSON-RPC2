@@ -7,7 +7,7 @@ use Carp;
 
 our $VERSION = 'v2.0.0';
 
-use JSON::XS;
+use JSON::MaybeXS;
 
 use constant ERR_PARSE  => -32700;
 use constant ERR_REQ    => -32600;

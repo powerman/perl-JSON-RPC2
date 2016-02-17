@@ -2,7 +2,7 @@ use warnings;
 use strict;
 use Test::More;
 use Test::Exception;
-use JSON::XS qw( decode_json encode_json );
+use JSON::MaybeXS qw( decode_json encode_json );
 
 use JSON::RPC2::Client;
 use JSON::RPC2::Server;

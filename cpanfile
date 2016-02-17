@@ -1,6 +1,6 @@
 requires 'perl', '5.010001';
 
-requires 'JSON::XS';
+requires 'JSON::MaybeXS';
 requires 'Scalar::Util';
 
 on configure => sub {

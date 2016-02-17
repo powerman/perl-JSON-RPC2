@@ -2,7 +2,7 @@ use Test::More tests => 17;
 
 use JSON::RPC2::Server;
 use JSON::RPC2::Client;
-use JSON::XS;
+use JSON::MaybeXS;
 
 
 my $server = JSON::RPC2::Server->new();
