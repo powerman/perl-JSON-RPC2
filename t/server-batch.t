@@ -133,7 +133,7 @@ is $Response->[1]{result}, 'b 42';
 
 # - mix of async call and notify -> order of replies not match order of calls
 SKIP: {
-    skip 'module EV required', 1 unless eval 'use EV;1';
+    skip 'module EV required', 1 unless eval { require EV };
 
     ($json_request, @call) = $client->batch(
         $client->call_named('d', first => 99),      # 0.03 sec

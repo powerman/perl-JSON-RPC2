@@ -78,7 +78,7 @@ is $Response->{error}{message}, 'b_err 42';
 
 
 SKIP: {
-    skip 'module EV required', 1 unless eval 'use EV;1';
+    skip 'module EV required', 1 unless eval { require EV };
 
     execute($client->call('c', 42));
     EV::run(EV::RUN_ONCE()) while !$Response;

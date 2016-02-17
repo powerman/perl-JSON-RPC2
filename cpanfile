@@ -10,6 +10,7 @@ on configure => sub {
 on test => sub {
     requires 'Test::Exception';
     requires 'Test::More';
+    recommends 'EV';
 };
 
 on develop => sub {
