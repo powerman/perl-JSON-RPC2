@@ -7,7 +7,7 @@ use Carp;
 
 our $VERSION = 'v2.0.0';
 
-use JSON::XS;
+use JSON::MaybeXS;
 use Scalar::Util qw( weaken refaddr );
 
 
