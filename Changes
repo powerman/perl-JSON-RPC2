@@ -1,6 +1,8 @@
 Revision history for JSON-RPC2
 
 {{$NEXT}}
+
+v2.1.1  2016-02-18 10:09:58 EET
 	- Support all JSON::MaybeXS engines.
 
 v2.1.0  2016-02-17 22:52:43 EET

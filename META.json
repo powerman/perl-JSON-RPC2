@@ -57,15 +57,15 @@
    "provides" : {
       "JSON::RPC2" : {
          "file" : "lib/JSON/RPC2.pm",
-         "version" : "v2.1.0"
+         "version" : "v2.1.1"
       },
       "JSON::RPC2::Client" : {
          "file" : "lib/JSON/RPC2/Client.pm",
-         "version" : "v2.1.0"
+         "version" : "v2.1.1"
       },
       "JSON::RPC2::Server" : {
          "file" : "lib/JSON/RPC2/Server.pm",
-         "version" : "v2.1.0"
+         "version" : "v2.1.1"
       }
    },
    "release_status" : "stable",
@@ -80,7 +80,7 @@
          "web" : "https://github.com/powerman/perl-JSON-RPC2"
       }
    },
-   "version" : "v2.1.0",
+   "version" : "v2.1.1",
    "x_contributors" : [
       "Scott Miller (ROS) <scott.miller@veritas.com>"
    ]
