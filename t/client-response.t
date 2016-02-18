@@ -63,9 +63,9 @@ is $failed, 'Parse error';
 ($failed, $result, $error, $call) = $client->response('[]');
 is $failed, 'expect Object';
 ($failed, $result, $error, $call) = $client->response('true');
-is $failed, 'expect Object';
+like $failed, qr/expect Object|Parse error/ms;
 ($failed, $result, $error, $call) = $client->response('false');
-is $failed, 'expect Object';
+like $failed, qr/expect Object|Parse error/ms;
 ($failed, $result, $error, $call) = $client->response('null');
 is $failed, 'Parse error';
 

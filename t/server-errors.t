@@ -56,12 +56,12 @@ is $Response->{error}{code}, -32700,
 is $Response->{error}{message}, 'Parse error.';
 
 execute('true');
-is $Response->{error}{code}, -32600;
-is $Response->{error}{message}, 'Invalid Request: expect Array or Object.';
+like $Response->{error}{code}, qr/-32600|-32700/ms;
+like $Response->{error}{message}, qr/Invalid Request: expect Array or Object|Parse error/ms;
 
 execute('false');
-is $Response->{error}{code}, -32600;
-is $Response->{error}{message}, 'Invalid Request: expect Array or Object.';
+like $Response->{error}{code}, qr/-32600|-32700/ms;
+like $Response->{error}{message}, qr/Invalid Request: expect Array or Object|Parse error/ms;
 
 execute('3.14');
 is $Response->{error}{code}, -32700;

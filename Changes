@@ -1,6 +1,7 @@
 Revision history for JSON-RPC2
 
 {{$NEXT}}
+	- Support all JSON::MaybeXS engines.
 
 v2.1.0  2016-02-17 22:52:43 EET
 	- Switch from JSON::XS to JSON::MaybeXS. Thanks Scott Miller.

@@ -2,7 +2,23 @@ use warnings;
 use strict;
 use Test::More;
 use Test::Exception;
+BEGIN {
+    my @engines = qw( Cpanel::JSON::XS JSON::XS JSON::PP );
+    my %engines = map { $_ => 1 } @engines;
+    if ($ENV{JSON_MAYBEXS_ENGINE}) {
+        die '$JSON_MAYBEXS_ENGINE is not one of: '.join q{, }, @engines
+            if !$engines{$ENV{JSON_MAYBEXS_ENGINE}};
+        unshift @INC, sub {
+            my (undef, $m) = @_;
+            $m =~ s{/}{::}msg;
+            $m =~ s{[.]pmc?\z}{}ms;
+            return \q{} if $engines{$m} && $ENV{JSON_MAYBEXS_ENGINE} ne $m;
+            return;
+        }
+    }
+}
 use JSON::MaybeXS qw( decode_json encode_json );
+diag 'JSON::MaybeXS has loaded '.JSON::MaybeXS::JSON();
 
 use JSON::RPC2::Client;
 use JSON::RPC2::Server;

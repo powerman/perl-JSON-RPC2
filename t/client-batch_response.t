@@ -68,9 +68,9 @@ is $failed, 'Parse error';
 ($failed, $result, $error, $call) = one_res $client->batch_response('[]');
 is $failed, 'empty Array';
 ($failed, $result, $error, $call) = one_res $client->batch_response('true');
-is $failed, 'expect Array or Object';
+like $failed, qr/expect Array or Object|Parse error/ms;
 ($failed, $result, $error, $call) = one_res $client->batch_response('false');
-is $failed, 'expect Array or Object';
+like $failed, qr/expect Array or Object|Parse error/ms;
 ($failed, $result, $error, $call) = one_res $client->batch_response('null');
 is $failed, 'Parse error';
 

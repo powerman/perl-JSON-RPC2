@@ -21,9 +21,14 @@ env:
     - EXTENDED_TESTING=1
     - TEST_MYSQL_USER=root
     - TEST_MYSQL_PASS=
+  matrix:
+    - JSON_MAYBEXS_ENGINE=Cpanel::JSON::XS
+    - JSON_MAYBEXS_ENGINE=JSON::XS
+    - JSON_MAYBEXS_ENGINE=JSON::PP
 
 before_install:
   - cpanm -nq Devel::Cover::Report::Coveralls
+  - cpanm -nq JSON::XS Cpanel::JSON::XS JSON::PP
 install:
   - cpanm -nq --installdeps .
 script:
