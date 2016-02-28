@@ -112,7 +112,7 @@ Alex Efros &lt;powerman@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2009-2014 by Alex Efros &lt;powerman@cpan.org>.
+This software is Copyright (c) 2009- by Alex Efros &lt;powerman@cpan.org>.
 
 This is free software, licensed under:
 
