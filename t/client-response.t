@@ -57,10 +57,10 @@ lives_ok { $client->response($json_response) };
 #   * false
 #   * null
 ($failed, $result, $error, $call) = $client->response('"string"');
-is $failed, 'Parse error',
+is $failed, 'expect Object',
     'not HASH';
 ($failed, $result, $error, $call) = $client->response('3.14');
-is $failed, 'Parse error';
+is $failed, 'expect Object';
 ($failed, $result, $error, $call) = $client->response('[]');
 is $failed, 'expect Object';
 ($failed, $result, $error, $call) = $client->response('true');
@@ -68,7 +68,7 @@ like $failed, qr/expect Object|Parse error/ms;
 ($failed, $result, $error, $call) = $client->response('false');
 like $failed, qr/expect Object|Parse error/ms;
 ($failed, $result, $error, $call) = $client->response('null');
-is $failed, 'Parse error';
+is $failed, 'expect Object';
 
 
 # - require "jsonrpc":"2.0"
