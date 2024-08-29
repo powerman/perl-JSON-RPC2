@@ -17,6 +17,8 @@ jobs:
         perl:
           - '5.40'
           - '5.38'
+          - '5.34'
+          - '5.18'
         maybexs:
           - Cpanel::JSON::XS
           - JSON::XS
