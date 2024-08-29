@@ -36,7 +36,7 @@ jobs:
 
       - run: cpanm --installdeps --with-configure .
 
-      - run: perl Build.PL && ./Build && cover -test
+      - run: perl Build.PL && ./Build && ./Build test
         env:
           HARNESS_OPTIONS: 'j1:c'
           HARNESS_TIMER: 1
@@ -45,7 +45,7 @@ jobs:
           PERL_MM_USE_DEFAULT: 1
           JSON_MAYBEXS_ENGINE: ${{ matrix.maybexs }}
 
-      - run: cover -report Coveralls
+      - run: cover -test -report Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        if: env.COVERALLS_REPO_TOKEN && matrix.perl == '5.40' && matrix.maybexs == 'JSON::XS'
+        if: env.COVERALLS_REPO_TOKEN && matrix.perl == '5.40' && matrix.maybexs == 'Cpanel::JSON::XS'
