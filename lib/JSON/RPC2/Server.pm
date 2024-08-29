@@ -5,7 +5,7 @@ use strict;
 use utf8;
 use Carp;
 
-our $VERSION = 'v2.1.2';
+our $VERSION = 'v2.1.3';
 
 use JSON::MaybeXS;
 
@@ -204,7 +204,7 @@ JSON::RPC2::Server - Transport-independent JSON-RPC 2.0 server
 
 =head1 VERSION
 
-This document describes JSON::RPC2::Server version v2.1.2
+This document describes JSON::RPC2::Server version v2.1.3
 
 
 =head1 SYNOPSIS
