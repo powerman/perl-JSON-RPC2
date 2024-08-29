@@ -28,4 +28,4 @@ jobs:
 
       - run: cpanm --installdeps .
 
-      - run: milla test
+      - run: perl Build.PL && ./Build && cover -test
