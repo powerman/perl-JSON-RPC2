@@ -6,15 +6,6 @@ on:
   pull_request:
     branches: master
 
-env:
-  HARNESS_OPTIONS: 'j1:c'
-  HARNESS_TIMER: 1
-  AUTOMATED_TESTING: 1
-  NONINTERACTIVE_TESTING: 1
-  PERL_MM_USE_DEFAULT: 1
-  RELEASE_TESTING: 1
-  EXTENDED_TESTING: 1
-
 jobs:
 
   test:
@@ -40,6 +31,12 @@ jobs:
       - run: cpanm --installdeps --with-configure .
 
       - run: perl Build.PL && ./Build && cover -test
+        env:
+          HARNESS_OPTIONS: 'j1:c'
+          HARNESS_TIMER: 1
+          AUTOMATED_TESTING: 1
+          NONINTERACTIVE_TESTING: 1
+          PERL_MM_USE_DEFAULT: 1
 
       - run: cover -report Coveralls
         env:
