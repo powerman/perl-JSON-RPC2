@@ -52,9 +52,9 @@ is $Response->{error}{message}, 'Invalid Request: expect {jsonrpc}="2.0".';
 #   * not an Object
 
 execute('null');
-is $Response->{error}{code}, -32600,
+is $Response->{error}{code}, -32700,
     'not Object';
-is $Response->{error}{message}, 'Invalid Request: expect Array or Object.';
+is $Response->{error}{message}, 'Parse error.';
 
 execute('true');
 like $Response->{error}{code}, qr/-32600|-32700/ms;
@@ -65,12 +65,12 @@ like $Response->{error}{code}, qr/-32600|-32700/ms;
 like $Response->{error}{message}, qr/Invalid Request: expect Array or Object|Parse error/ms;
 
 execute('3.14');
-is $Response->{error}{code}, -32600;
-is $Response->{error}{message}, 'Invalid Request: expect Array or Object.';
+is $Response->{error}{code}, -32700;
+is $Response->{error}{message}, 'Parse error.';
 
 execute('"string"');
-is $Response->{error}{code}, -32600;
-is $Response->{error}{message}, 'Invalid Request: expect Array or Object.';
+is $Response->{error}{code}, -32700;
+is $Response->{error}{message}, 'Parse error.';
 
 execute('[]');
 is $Response->{error}{code}, -32600;
