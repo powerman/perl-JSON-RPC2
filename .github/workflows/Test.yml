@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: master
 
+env:
+  HARNESS_OPTIONS: 'j1:c'
+  HARNESS_TIMER: 1
+  AUTOMATED_TESTING: 1
+  NONINTERACTIVE_TESTING: 1
+  PERL_MM_USE_DEFAULT: 1
+  RELEASE_TESTING: 1
+  EXTENDED_TESTING: 1
+
 jobs:
 
   test:
@@ -26,6 +35,13 @@ jobs:
 
       - run: perl -V
 
+      - run: cpanm Devel::Cover::Report::Coveralls
+
       - run: cpanm --installdeps --with-configure .
 
       - run: perl Build.PL && ./Build && cover -test
+
+      - run: cover -report Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        if: env.COVERALLS_REPO_TOKEN && matrix.perl == '5.40'
