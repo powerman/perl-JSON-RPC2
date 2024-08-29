@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/powerman/perl-JSON-RPC2.svg?branch=master)](https://travis-ci.org/powerman/perl-JSON-RPC2)
+[![Actions Status](https://github.com/powerman/perl-JSON-RPC2/actions/workflows/Test.yml/badge.svg)](https://github.com/powerman/perl-JSON-RPC2/actions)
 [![Coverage Status](https://coveralls.io/repos/powerman/perl-JSON-RPC2/badge.svg?branch=master)](https://coveralls.io/r/powerman/perl-JSON-RPC2?branch=master)
 
 # NAME

@@ -10,7 +10,7 @@
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "JSON-RPC2",
    "no_index" : {
@@ -85,7 +85,7 @@
       "Scott Miller (ROS) <scott.miller@veritas.com>"
    ],
    "x_generated_by_perl" : "v5.40.0",
-   "x_serialization_backend" : "JSON::XS version 4.03",
+   "x_serialization_backend" : "Cpanel::JSON::XS version 4.38",
    "x_spdx_expression" : "MIT",
    "x_static_install" : 1
 }

@@ -1,0 +1,54 @@
+name: Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        perl:
+          - '5.40'
+          - '5.38'
+          - '5.34'
+          - '5.18'
+        maybexs:
+          - Cpanel::JSON::XS
+          - JSON::XS
+          - JSON::PP
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+
+      - run: perl -V
+
+      - run: cpanm Devel::Cover::Report::Coveralls
+
+      - run: cpanm Cpanel::JSON::XS JSON::XS JSON::PP
+
+      - run: cpanm --installdeps --with-configure .
+
+      - run: perl Build.PL && ./Build && ./Build test
+        env:
+          HARNESS_OPTIONS: 'j1:c'
+          HARNESS_TIMER: 1
+          AUTOMATED_TESTING: 1
+          NONINTERACTIVE_TESTING: 1
+          PERL_MM_USE_DEFAULT: 1
+          JSON_MAYBEXS_ENGINE: ${{ matrix.maybexs }}
+
+      - run: cover -test -report Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        if: env.COVERALLS_REPO_TOKEN && matrix.perl == '5.40' && matrix.maybexs == 'Cpanel::JSON::XS'
