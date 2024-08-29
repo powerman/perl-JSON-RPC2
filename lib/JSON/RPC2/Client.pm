@@ -115,7 +115,7 @@ sub batch_response {
     croak 'require 1 param' if @_ != 2;
 
     undef $@;
-    my $response = ref $json ? $json : eval { decode_json($json) };
+    my $response = ref $json ? $json : eval { JSON::MaybeXS->new(allow_nonref=>0)->decode($json) };
     if ($@) {
         return [ 'Parse error' ];
     }
@@ -137,7 +137,7 @@ sub response {      ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     croak 'require 1 param' if @_ != 2;
 
     undef $@;
-    my $response = ref $json ? $json : eval { decode_json($json) };
+    my $response = ref $json ? $json : eval { JSON::MaybeXS->new(allow_nonref=>0)->decode($json) };
     if ($@) {
         return 'Parse error';
     }
@@ -234,7 +234,7 @@ This document describes JSON::RPC2::Client version v2.1.2
  #
  # EXAMPLE of simple blocking STDIN-STDOUT client
  #
- 
+
  $client = JSON::RPC2::Client->new();
  $json_request = $client->call('method', @params);
 
@@ -259,7 +259,7 @@ Can be used both in sync (simple, for blocking I/O) and async
 (for non-blocking I/O in event-based environment) mode.
 
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 new
 

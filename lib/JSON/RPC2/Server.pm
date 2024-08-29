@@ -53,7 +53,7 @@ sub execute {
     croak 'second param must be callback' if ref $cb ne 'CODE';
 
     undef $@;
-    my $request = ref $json ? $json : eval { decode_json($json) };
+    my $request = ref $json ? $json : eval { JSON::MaybeXS->new(allow_nonref=>0)->decode($json) };
     if ($@) {
         return _error($cb, undef, ERR_PARSE, 'Parse error.');
     }
@@ -286,7 +286,7 @@ be done in non-blocking way - this way several methods can be executing
 in parallel on server).
 
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 new
 
