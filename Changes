@@ -1,6 +1,7 @@
 Revision history for JSON-RPC2
 
 {{$NEXT}}
+        - Fix compatibility with modern JSON::XS.
 
 v2.1.2  2018-04-03 18:14:29 EEST
 	- Fix compatibility with perl-5.26.

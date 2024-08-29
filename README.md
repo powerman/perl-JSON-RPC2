@@ -11,7 +11,7 @@ This document describes JSON::RPC2 version v2.1.2
 
 # SYNOPSIS
 
-See [JSON::RPC2::Server](https://metacpan.org/pod/JSON::RPC2::Server) and [JSON::RPC2::Client](https://metacpan.org/pod/JSON::RPC2::Client) for usage examples.
+See [JSON::RPC2::Server](https://metacpan.org/pod/JSON%3A%3ARPC2%3A%3AServer) and [JSON::RPC2::Client](https://metacpan.org/pod/JSON%3A%3ARPC2%3A%3AClient) for usage examples.
 
 # DESCRIPTION
 
@@ -27,7 +27,7 @@ methods in any event-based environment.
 
 # INTERFACE
 
-See [JSON::RPC2::Server](https://metacpan.org/pod/JSON::RPC2::Server) and [JSON::RPC2::Client](https://metacpan.org/pod/JSON::RPC2::Client) for details.
+See [JSON::RPC2::Server](https://metacpan.org/pod/JSON%3A%3ARPC2%3A%3AServer) and [JSON::RPC2::Client](https://metacpan.org/pod/JSON%3A%3ARPC2%3A%3AClient) for details.
 
 # RATIONALE
 
@@ -35,32 +35,32 @@ There a lot of other RPC modules on CPAN, most of them has features doesn't
 provided by this module, but they either too complex and bloated or lack
 some features I need.
 
-- [RPC::Lite](https://metacpan.org/pod/RPC::Lite)
+- [RPC::Lite](https://metacpan.org/pod/RPC%3A%3ALite)
 
     Not transport-independent.
 
-- [RPC::Simple](https://metacpan.org/pod/RPC::Simple)
+- [RPC::Simple](https://metacpan.org/pod/RPC%3A%3ASimple)
 
     Not transport-independent.
     Do eval() of perl code received from remote server.
 
-- [RPC::Async](https://metacpan.org/pod/RPC::Async)
+- [RPC::Async](https://metacpan.org/pod/RPC%3A%3AAsync)
 
     Not transport-independent.
     Not event-loop-independent.
 
-- [JSON::RPC](https://metacpan.org/pod/JSON::RPC)
-- [RPC::JSON](https://metacpan.org/pod/RPC::JSON)
-- [RPC::Object](https://metacpan.org/pod/RPC::Object)
-- [Event::RPC](https://metacpan.org/pod/Event::RPC)
-- [RPC::Serialized](https://metacpan.org/pod/RPC::Serialized)
-- [XML::RPC](https://metacpan.org/pod/XML::RPC)
-- [RPC::XML](https://metacpan.org/pod/RPC::XML)
+- [JSON::RPC](https://metacpan.org/pod/JSON%3A%3ARPC)
+- [RPC::JSON](https://metacpan.org/pod/RPC%3A%3AJSON)
+- [RPC::Object](https://metacpan.org/pod/RPC%3A%3AObject)
+- [Event::RPC](https://metacpan.org/pod/Event%3A%3ARPC)
+- [RPC::Serialized](https://metacpan.org/pod/RPC%3A%3ASerialized)
+- [XML::RPC](https://metacpan.org/pod/XML%3A%3ARPC)
+- [RPC::XML](https://metacpan.org/pod/RPC%3A%3AXML)
 
     Not transport-independent.
     Blocking on remote function call.
 
-- [JSON::RPC::Common](https://metacpan.org/pod/JSON::RPC::Common)
+- [JSON::RPC::Common](https://metacpan.org/pod/JSON%3A%3ARPC%3A%3ACommon)
 
     In theory it's doing everything... but I failed to find out how to use it
     (current version is 0.05) - probably it's incomplete yet. Even now it's
