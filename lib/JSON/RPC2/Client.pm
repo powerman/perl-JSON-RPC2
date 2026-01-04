@@ -18,9 +18,16 @@ sub new {
         free_id     => [],
         call        => {},
         id          => {},
+	strict      => 1,
     };
     return bless $self, $class;
 }
+
+sub strict {
+    my ($self, $strict) = @_;
+    $self->{strict} = int($strict) if defined $strict;
+    return $self->{strict}
+} 
 
 sub batch {
     my ($self, @requests) = @_;
@@ -144,7 +151,7 @@ sub response {      ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     if (ref $response ne 'HASH') {
         return 'expect Object';
     }
-    if (!defined $response->{jsonrpc} || $response->{jsonrpc} ne '2.0') {
+    if ($self->{strict} && (!defined $response->{jsonrpc} || $response->{jsonrpc} ne '2.0')) {
         return 'expect {jsonrpc}="2.0"';
     }
     if (!exists $response->{id} || ref $response->{id} || !defined $response->{id}) {
