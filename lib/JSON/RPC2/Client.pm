@@ -18,15 +18,15 @@ sub new {
         free_id     => [],
         call        => {},
         id          => {},
-	strict      => 1,
+        lax_response_version => 0,
     };
     return bless $self, $class;
 }
 
-sub strict {
-    my ($self, $strict) = @_;
-    $self->{strict} = int($strict) if defined $strict;
-    return $self->{strict}
+sub lax_response_version {
+    my ($self, $lax_response_version) = @_;
+    $self->{lax_response_version} = int($lax_response_version) if defined $lax_response_version;
+    return $self->{lax_response_version}
 } 
 
 sub batch {
@@ -151,7 +151,7 @@ sub response {      ## no critic (ProhibitExcessComplexity RequireArgUnpacking)
     if (ref $response ne 'HASH') {
         return 'expect Object';
     }
-    if ($self->{strict} && (!defined $response->{jsonrpc} || $response->{jsonrpc} ne '2.0')) {
+    if (!$self->{lax_response_version} && (!defined $response->{jsonrpc} || $response->{jsonrpc} ne '2.0')) {
         return 'expect {jsonrpc}="2.0"';
     }
     if (!exists $response->{id} || ref $response->{id} || !defined $response->{id}) {
@@ -402,6 +402,24 @@ Return nothing.
 
 Return list with all currently pending $call's.
 
+=head2 lax_response_version
+
+    $setting = $client->lax_response_version(1);
+    $setting = $client->lax_response_version;
+
+    The JSON-RPC 2.0 Specification requires all response objects to have a
+    member C<jsonrpc> with the value of exactly C<2.0>.
+
+    Set and query whether the client is to enforce this requirement or whether
+    it is liberal in what it accepts.
+
+    Setting this mode allows responses to violate this requirement.
+    This mode is required by Shelly smart home devices, which miss the
+    C<jsonrpc> member in responses.
+
+    By default it is enforced.
+
+    L<https://www.jsonrpc.org/specification#response_object>
 
 =head1 SUPPORT
 
